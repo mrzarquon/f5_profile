@@ -78,7 +78,7 @@ class f5_profile::example {
     ensure      => present,
     destination => '192.168.111.2',
     port        => '8281',
-    pool        => 'test_http_pool',
+    pool        => 'test_pool_1',
     protocol    => 'tcp',
   }
 
