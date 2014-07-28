@@ -2,7 +2,7 @@ class f5_profile::example {
   f5_v11_vlan {['VLAN09','VLAN10','VLAN11','VLAN12','VLAN13','VLAN14','VLAN15','VLAN16','VLAN17','VLAN18','VLAN19','VLAN20','VLAN21']:
     ensure    => present,
     vlan_tag  => 'auto',
-    interface => '1.3',
+    interface => '1.1',
   }
 
   f5_v11_vlan {'VLAN22':
@@ -12,7 +12,7 @@ class f5_profile::example {
   f5_v11_vlan {'VLAN08':
     ensure      => present,
     vlan_tag    => '08',
-    interface   => '1.2',
+    interface   => '1.1',
     description => 'Test VLAN08',
     tag_type    => 'tagged',
   }
