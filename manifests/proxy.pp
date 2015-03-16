@@ -1,67 +1,41 @@
 class f5_profile::proxy (
   $username = 'admin',
-  $password = 'admin',
+  $password = 'puppetlabs',
   $devfqdn = 'f5.puppetlabs.demo',
+  $deviceconf = '/etc/puppetlabs/puppet/device.conf',
 ) {
 
-f5_v11::config { "$devfqdn":
-  username => "$username",
-  password => "$password",
-  url      => "$devfqdn",
-  target   => '/etc/puppetlabs/puppet/device.conf',
-}
+  # we need to create the bigip configuration
+  # luckily it is an ini-esque file
 
-  File {
-    owner => 'pe-puppet',
-    group => 'pe-puppet',
+  package { 'faraday':
+    ensure   => present,
+    provider => 'pe_gem',
+    notify   => Service['pe-puppetserver'],
   }
 
-  file { '/var/opt/lib/pe-puppet/devices':
-    ensure => directory,
-    mode   => '0750'
+
+  ini_setting { 'bigip_type':
+    ensure            => present,
+    path              => $deviceconf,
+    section           => $devfqdn,
+    setting           => 'type',
+    value             => 'f5',
+    key_val_separator => ' ',
+  }
+  ini_setting { 'bigip_url':
+    ensure            => present,
+    path              => $deviceconf,
+    section           => $devfqdn,
+    setting           => 'url',
+    value             => "https://${username}:${password}@${devfqdn}/",
+    key_val_separator => ' ',
   }
 
-  file { "/var/opt/lib/pe-puppet/devices/${devfqdn}":
-    ensure => directory,
-    mode   => '0755',
-  }
-
-  file { "/var/opt/lib/pe-puppet/devices/${devfqdn}/ssl":
-    ensure => directory,
-    owner  => '0771',
-  }
-
-  file { "/var/opt/lib/pe-puppet/devices/${devfqdn}/ssl/private_keys":
-    ensure => directory,
-    owner  => '0771',
-  }
-
-  file { "/var/opt/lib/pe-puppet/devices/${devfqdn}/ssl/certs":
-    ensure => directory,
-    owner  => '0771',
-  }
-
-  file { "/var/opt/lib/pe-puppet/devices/${devfqdn}/ssl/private_keys/${devfqdn}.pem":
-    ensure  => file,
-    mode    => '0600',
-    content => file("/etc/puppetlabs/puppet/ssl/private_keys/${devfqdn}.pem"),
-  }
-
-  file { "/var/opt/lib/pe-puppet/devices/${devfqdn}/ssl/certs/ca.pem":
-    ensure  => file,
-    mode    => '0644',
-    content => file("/etc/puppetlabs/puppet/ssl/certs/ca.pem"),
-  }
-
-  file { "/var/opt/lib/pe-puppet/devices/${devfqdn}/ssl/certs/${devfqdn}.pem":
-    ensure  => file,
-    mode    => '0644',
-    content => file("/etc/puppetlabs/puppet/ssl/certs/${devfqdn}.pem"),
-  }
-
-  file { "/var/opt/lib/pe-puppet/devices/${devfqdn}/ssl/crl.pem":
-    ensure  => file,
-    content => file("/etc/puppetlabs/puppet/ssl/crl.pem"),
+  file { $deviceconf:
+    ensure => file,
+    owner  => 'pe-puppet',
+    group  => 'pe-puppet',
   }
 
 
