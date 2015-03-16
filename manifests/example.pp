@@ -1,5 +1,11 @@
 class f5_profile::example {
-  
+
+  # only f5_node's created by puppet are allowed
+  resources { 'f5_node':
+    purge => true,
+  }
+
+
   #we are going to automatically add any nodes to the f5
   # that are classified with the f5_profile::nodes class
   F5_node<<| |>>
