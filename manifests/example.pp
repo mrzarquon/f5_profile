@@ -38,12 +38,12 @@ class f5_profile::example {
     ensure                    => 'present',
     provider                  => 'standard',
     default_pool              => '/Common/puppet_pool',
-    destination_address       => '192.168.80.100',
+    destination_address       => '10.0.20.20',
     destination_mask          => '255.255.255.255',
     http_profile              => '/Common/http',
     service_port              => '80',
     protocol                  => 'tcp',
     source                    => '0.0.0.0/0',
-    vlan_and_tunnel_traffic   => {'enabled' => ['/Common/Client']},
+    vlan_and_tunnel_traffic   => {'enabled' => ['/Common/external']},
   }
 }
